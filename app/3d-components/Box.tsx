@@ -8,7 +8,7 @@ export default function Box(props: MeshProps) {
   return (
     <mesh {...props} ref={mesh}>
       <boxGeometry args={[1, 1, 1]} />
-      <meshStandardMaterial color={"orange"} />
+      <meshStandardMaterial color={"gray"} />
     </mesh>
   );
 }

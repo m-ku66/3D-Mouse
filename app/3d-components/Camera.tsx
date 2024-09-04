@@ -1,16 +1,26 @@
 import { useFrame, useThree } from "@react-three/fiber";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Vector3 } from "three";
 
-export default function Camera() {
+type CameraProps = {
+  position: [number, number, number];
+  target: [number, number, number];
+};
+
+export default function Camera(props: CameraProps) {
+  const { position, target } = props;
   const { camera } = useThree();
-  const cameraTarget = useRef(new Vector3(0, 0, 0));
+  const cameraTarget = useRef(new Vector3(target[0], target[1], target[2]));
+
+  useEffect(() => {
+    cameraTarget.current.set(target[0], target[1], target[2]);
+  }, [target]);
 
   useFrame(() => {
     // Set the camera position
-    camera.position.set(5, 5, 5);
+    camera.position.set(position[0], position[1], position[2]);
 
-    // Make the camera look at the target
+    // Make the camera look at the updated target
     camera.lookAt(cameraTarget.current);
   });
 
