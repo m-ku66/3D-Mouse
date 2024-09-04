@@ -7,18 +7,26 @@ type BoxGridProps = {
   width: number;
   depth: number;
   spacing?: number;
-  boxProps?: MeshProps;
+  boxProps?: {
+    props: MeshProps;
+    tracking: boolean;
+  };
   animationTension?: number;
   animationFriction?: number;
+  animationDirection?: number;
 };
 
 export default function BoxGrid({
   width,
   depth,
   spacing = 1.5,
-  boxProps = {},
+  boxProps = {
+    props: {},
+    tracking: false,
+  },
   animationTension = 100,
   animationFriction = 20,
+  animationDirection = 1,
 }: BoxGridProps) {
   const [hoveredBox, setHoveredBox] = useState<string | null>(null);
 
@@ -43,7 +51,7 @@ export default function BoxGrid({
         // Use react-spring to animate the y position
         const springProps = useSpring({
           position: isHovered
-            ? [basePosition[0], 0.9, basePosition[2]]
+            ? [basePosition[0], 0.9 * animationDirection, basePosition[2]]
             : basePosition,
           config: { tension: animationTension, friction: animationFriction },
         });
