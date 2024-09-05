@@ -7,42 +7,58 @@ import { useState } from "react";
 import UserInterface from "./interface components/UserInterface";
 
 export default function Home() {
-  const [fx, setFx] = useState(false);
+  const [appState, setAppState] = useState("boxGrid");
+  const [fxSwitch, setFxSwitch] = useState(false);
+  const [fx, setFx] = useState({
+    pixelation: 3,
+    bloom: true,
+    dot: 0,
+    glitch: false,
+    hueSat: { hue: 30, saturation: 0 },
+  });
+  const [boxGridProps, setBoxGridProps] = useState({
+    width: 30,
+    depth: 30,
+    spacing: 1.01,
+    animationTension: 300,
+    animationFriction: 50,
+    animationDirection: 1,
+    boxProps: { props: {}, tracking: false },
+  });
 
-  function handleFX() {
-    if (fx) {
-      return (
-        <FX
-          pixelation={3}
-          bloom={true}
-          dot={10}
-          glitch={true}
-          hueSat={{ hue: 10, saturation: 0 }}
-        />
-      );
-    } else {
-      return <></>;
+  function renderScene() {
+    switch (appState) {
+      case "boxGrid":
+        return (
+          <Canvas>
+            {fxSwitch ? <FX {...fx} /> : <></>}
+            <OrthoCamera position={[30, 30, 30]} target={[0, 0, 0]} zoom={1} />
+            <ambientLight intensity={0.1} />
+            <pointLight position={[3, 3, -9]} intensity={100} color="red" />
+            <pointLight position={[-3, 3, 9]} intensity={100} color="blue" />
+            <BoxGrid {...boxGridProps} />
+          </Canvas>
+        );
+      case "shader":
+        return <div>Shader scene</div>;
+      default:
+        return <></>;
     }
   }
+
   return (
-    <div className="hidden md:flex relative container max-w-full h-screen">
-      <UserInterface />
-      <Canvas>
-        {handleFX()}
-        <OrthoCamera position={[30, 30, 30]} target={[0, 0, 0]} zoom={1} />
-        <ambientLight intensity={0.1} />
-        <pointLight position={[3, 3, -9]} intensity={100} color="red" />
-        <pointLight position={[-3, 3, 9]} intensity={100} color="blue" />
-        <BoxGrid
-          width={30}
-          depth={30}
-          spacing={1.01}
-          animationTension={300} // Higher values will make the blocks move more
-          animationFriction={50} // Higher values will make the blocks move faster
-          animationDirection={1} // 1 or -1 will make the blocks either rise or fall
-          boxProps={{ props: {}, tracking: false }} // tracking will change the color of the blocks
-        />
-      </Canvas>
+    <div className="hidden md:flex relative container max-w-full h-screen overflow-hidden">
+      <UserInterface
+        appState={appState}
+        setAppState={setAppState}
+        fx={fx}
+        setFx={setFx}
+        boxGridProps={boxGridProps}
+        setBoxGridProps={setBoxGridProps}
+        fxSwitch={fxSwitch}
+        setFxSwitch={setFxSwitch}
+      />
+      {renderScene()}
     </div>
   );
 }
