@@ -85,20 +85,25 @@ export default function Home() {
   }
 
   return (
-    <div className="hidden md:flex relative container max-w-full h-screen overflow-hidden">
-      <UserInterface
-        appState={appState}
-        setAppState={setAppState}
-        fx={fx}
-        setFx={setFx}
-        boxGridProps={boxGridProps}
-        setBoxGridProps={setBoxGridProps}
-        fxSwitch={fxSwitch}
-        setFxSwitch={setFxSwitch}
-        pointShaderProps={pointShaderProps}
-        setPointShaderProps={setPointShaderProps}
-      />
-      {renderScene()}
-    </div>
+    <>
+      <div className="hidden md:flex relative container max-w-full h-screen overflow-hidden">
+        <UserInterface
+          appState={appState}
+          setAppState={setAppState}
+          fx={fx}
+          setFx={setFx}
+          boxGridProps={boxGridProps}
+          setBoxGridProps={setBoxGridProps}
+          fxSwitch={fxSwitch}
+          setFxSwitch={setFxSwitch}
+          pointShaderProps={pointShaderProps}
+          setPointShaderProps={setPointShaderProps}
+        />
+        {renderScene()}
+      </div>
+      <div className="md:hidden flex container max-w-full h-screen overflow-hidden justify-center items-center">
+        <h1>Please use a larger screen</h1>
+      </div>
+    </>
   );
 }
