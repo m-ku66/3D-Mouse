@@ -1,4 +1,5 @@
-import React from "react";
+"use client";
+import React, { useEffect } from "react";
 import Image from "next/image";
 import {
   ArmchairIcon,
@@ -16,6 +17,11 @@ import {
   SunMoonIcon,
   BoxesIcon,
   OrbitIcon,
+  RulerIcon,
+  Rotate3dIcon,
+  MoveHorizontalIcon,
+  MoveVerticalIcon,
+  MoveDiagonalIcon,
 } from "lucide-react";
 import {
   HoverCard,
@@ -34,6 +40,8 @@ type Props = {
   setBoxGridProps: React.Dispatch<React.SetStateAction<any>>;
   fxSwitch: boolean;
   setFxSwitch: React.Dispatch<React.SetStateAction<boolean>>;
+  pointShaderProps: any;
+  setPointShaderProps: React.Dispatch<React.SetStateAction<any>>;
 };
 
 const UserInterface = ({
@@ -45,9 +53,15 @@ const UserInterface = ({
   setBoxGridProps,
   fxSwitch,
   setFxSwitch,
+  pointShaderProps,
+  setPointShaderProps,
 }: Props) => {
   const { theme, setTheme } = useTheme();
-  // setTheme("light");
+
+  useEffect(() => {
+    setTheme("dark");
+  }, []);
+
   function renderTitle() {
     switch (appState) {
       case "boxGrid":
@@ -207,7 +221,101 @@ const UserInterface = ({
           </>
         );
       case "shader":
-        return <div>Shader scene</div>;
+        return (
+          <>
+            {/* Size */}
+            <FxControl
+              icon={<RulerIcon size={24} />}
+              controlType="slider"
+              value={pointShaderProps.size}
+              min={10}
+              max={20}
+              step={0.5}
+              onChange={(value) =>
+                setPointShaderProps((prev: any) => ({
+                  ...prev,
+                  size: value,
+                }))
+              }
+            />
+
+            {/* Rotate Speed */}
+            <FxControl
+              icon={<Rotate3dIcon size={24} />}
+              controlType="slider"
+              value={pointShaderProps.rotateSpeed}
+              min={0}
+              max={100}
+              step={1}
+              onChange={(value) =>
+                setPointShaderProps((prev: any) => ({
+                  ...prev,
+                  rotateSpeed: value,
+                }))
+              }
+            />
+
+            {/* Turb Direction X */}
+            <FxControl
+              icon={<MoveHorizontalIcon size={24} />}
+              controlType="slider"
+              value={pointShaderProps.turbDirection[0]} // Correctly bind to the X direction value
+              min={-100}
+              max={100}
+              step={10}
+              onChange={(value) =>
+                setPointShaderProps((prev: any) => ({
+                  ...prev,
+                  turbDirection: [
+                    value, // Update X direction
+                    prev.turbDirection[1], // Use previous Y direction value
+                    prev.turbDirection[2], // Use previous Z direction value
+                  ],
+                }))
+              }
+            />
+
+            {/* Turb Direction Y */}
+            <FxControl
+              icon={<MoveVerticalIcon size={24} />}
+              controlType="slider"
+              value={pointShaderProps.turbDirection[1]} // Correctly bind to the Y direction value
+              min={-100}
+              max={100}
+              step={10}
+              onChange={(value) =>
+                setPointShaderProps((prev: any) => ({
+                  ...prev,
+                  turbDirection: [
+                    prev.turbDirection[0], // Use previous X direction value
+                    value, // Update Y direction
+                    prev.turbDirection[2], // Use previous Z direction value
+                  ],
+                }))
+              }
+            />
+
+            {/* Turb Direction Z */}
+            <FxControl
+              icon={<MoveDiagonalIcon size={24} />}
+              controlType="slider"
+              value={pointShaderProps.turbDirection[2]} // Correctly bind to the Z direction value
+              min={-100}
+              max={100}
+              step={10}
+              onChange={(value) =>
+                setPointShaderProps((prev: any) => ({
+                  ...prev,
+                  turbDirection: [
+                    prev.turbDirection[0], // Use previous X direction value
+                    prev.turbDirection[1], // Use previous Y direction value
+                    value, // Update Z direction
+                  ],
+                }))
+              }
+            />
+          </>
+        );
       default:
         return <></>;
     }
@@ -238,14 +346,18 @@ const UserInterface = ({
             <HoverCardContent className="bg-secondary">
               <div className="flex flex-col gap-4">
                 <div
-                  onClick={() => setAppState("boxGrid")}
+                  onClick={() => {
+                    setAppState("boxGrid"), setTheme("dark");
+                  }}
                   className="cursor-pointer select-none flex gap-2 opacity-50 hover:opacity-100 duration-150"
                 >
                   <BoxesIcon size={24} />
                   <p>Box Grid Scene</p>
                 </div>
                 <div
-                  onClick={() => setAppState("shader")}
+                  onClick={() => {
+                    setAppState("shader"), setTheme("light");
+                  }}
                   className="cursor-pointer select-none flex gap-2 opacity-50 hover:opacity-100 duration-150"
                 >
                   <OrbitIcon size={24} />

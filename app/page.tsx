@@ -3,18 +3,19 @@ import { Canvas } from "@react-three/fiber";
 import BoxGrid from "./3d-components/BoxGrid";
 import OrthoCamera from "./3d-components/OrthoCamera";
 import FX from "./fx-components/FX";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import UserInterface from "./interface components/UserInterface";
+import PointShader from "./3d-components/PointShader";
 
 export default function Home() {
   const [appState, setAppState] = useState("boxGrid");
   const [fxSwitch, setFxSwitch] = useState(false);
   const [fx, setFx] = useState({
-    pixelation: 3,
-    bloom: true,
+    pixelation: 2,
+    bloom: false,
     dot: 0,
     glitch: false,
-    hueSat: { hue: 30, saturation: 0 },
+    hueSat: { hue: 0, saturation: 0 },
   });
   const [boxGridProps, setBoxGridProps] = useState({
     width: 30,
@@ -25,6 +26,26 @@ export default function Home() {
     animationDirection: 1,
     boxProps: { props: {}, tracking: false },
   });
+  const [pointShaderProps, setPointShaderProps] = useState({
+    size: 10,
+    rotateSpeed: 0.01,
+    turbDirection: [0, 0, 0] as [number, number, number],
+  });
+
+  useEffect(() => {
+    setFx({
+      pixelation: 5,
+      bloom: false,
+      dot: 0,
+      glitch: false,
+      hueSat: { hue: 0, saturation: 0 },
+    });
+    setPointShaderProps({
+      size: 10,
+      rotateSpeed: 0.01,
+      turbDirection: [0, 0, 0] as [number, number, number],
+    });
+  }, [appState]);
 
   function renderScene() {
     switch (appState) {
@@ -40,7 +61,24 @@ export default function Home() {
           </Canvas>
         );
       case "shader":
-        return <div>Shader scene</div>;
+        return (
+          <Canvas
+            className="fadeIn3"
+            raycaster={{
+              params: {
+                Mesh: { threshold: 0.2 },
+                Line: { threshold: 0.2 },
+                LOD: { threshold: 0.2 },
+                Sprite: { threshold: 0.2 },
+                Points: { threshold: 0.2 },
+              },
+            }}
+            camera={{ position: [0, 0, 10] }}
+          >
+            {fxSwitch ? <FX {...fx} /> : <></>}
+            <PointShader {...pointShaderProps} />
+          </Canvas>
+        );
       default:
         return <></>;
     }
@@ -57,6 +95,8 @@ export default function Home() {
         setBoxGridProps={setBoxGridProps}
         fxSwitch={fxSwitch}
         setFxSwitch={setFxSwitch}
+        pointShaderProps={pointShaderProps}
+        setPointShaderProps={setPointShaderProps}
       />
       {renderScene()}
     </div>
