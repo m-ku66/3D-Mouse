@@ -30,7 +30,7 @@ export default function Home() {
     switch (appState) {
       case "boxGrid":
         return (
-          <Canvas>
+          <Canvas className="fadeIn3">
             {fxSwitch ? <FX {...fx} /> : <></>}
             <OrthoCamera position={[30, 30, 30]} target={[0, 0, 0]} zoom={1} />
             <ambientLight intensity={0.1} />

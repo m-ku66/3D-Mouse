@@ -1,27 +1,29 @@
-"use client";
-import React, { useState } from "react";
+import React from "react";
 import Image from "next/image";
-import { Slider } from "@/components/ui/slider";
 import {
   ArmchairIcon,
   SlidersHorizontalIcon,
-  SunMoonIcon,
-  Grid2X2Icon,
   SparklesIcon,
   LayoutGridIcon,
+  Grid2X2Icon,
   SunIcon,
   GripIcon,
   SquareSquareIcon,
   BlendIcon,
   EclipseIcon,
   EyeIcon,
+  CircleArrowOutUpRightIcon,
+  SunMoonIcon,
+  BoxesIcon,
+  OrbitIcon,
 } from "lucide-react";
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import { Switch } from "@/components/ui/switch";
+import FxControl from "../fx-components/FXControl";
+import { useTheme } from "next-themes";
 
 type Props = {
   appState: string;
@@ -44,16 +46,170 @@ const UserInterface = ({
   fxSwitch,
   setFxSwitch,
 }: Props) => {
-  const [openMenu, setOpenMenu] = useState(false);
-
+  const { theme, setTheme } = useTheme();
+  // setTheme("light");
   function renderTitle() {
     switch (appState) {
       case "boxGrid":
         return "Box Grid";
-      case "box":
-        return "Box";
+      case "shader":
+        return "Shader";
       default:
         return "";
+    }
+  }
+
+  function renderControls() {
+    switch (appState) {
+      case "boxGrid":
+        return (
+          <>
+            {/* Grid Spacing */}
+            <FxControl
+              icon={<LayoutGridIcon size={24} />}
+              controlType="slider"
+              value={boxGridProps.spacing}
+              min={0.5}
+              max={2}
+              step={0.01}
+              onChange={(value) =>
+                setBoxGridProps((prev: any) => ({
+                  ...prev,
+                  spacing: value,
+                }))
+              }
+            />
+
+            {/* Pixelation */}
+            <FxControl
+              icon={<Grid2X2Icon size={24} />}
+              controlType="slider"
+              value={fx.pixelation}
+              min={0}
+              max={5}
+              step={0.5}
+              onChange={(value) =>
+                setFx((prev: any) => ({
+                  ...prev,
+                  pixelation: value,
+                }))
+              }
+            />
+
+            {/* Bloom */}
+            <FxControl
+              icon={<SunIcon size={24} />}
+              controlType="switch"
+              value={fx.bloom}
+              onChange={(checked) =>
+                setFx((prev: any) => ({
+                  ...prev,
+                  bloom: checked,
+                }))
+              }
+            />
+
+            {/* Dot */}
+            <FxControl
+              icon={<GripIcon size={24} />}
+              controlType="slider"
+              value={fx.dot}
+              min={0}
+              max={1}
+              step={0.01}
+              onChange={(value) =>
+                setFx((prev: any) => ({
+                  ...prev,
+                  dot: value,
+                }))
+              }
+            />
+
+            {/* Glitch */}
+            <FxControl
+              icon={<SquareSquareIcon size={24} />}
+              controlType="switch"
+              value={fx.glitch}
+              onChange={(checked) =>
+                setFx((prev: any) => ({
+                  ...prev,
+                  glitch: checked,
+                }))
+              }
+            />
+
+            {/* Hue */}
+            <FxControl
+              icon={<BlendIcon size={24} />}
+              controlType="slider"
+              value={fx.hueSat.hue}
+              min={0}
+              max={50}
+              step={1}
+              onChange={(value) =>
+                setFx((prev: any) => ({
+                  ...prev,
+                  hueSat: {
+                    ...prev.hueSat,
+                    hue: value,
+                  },
+                }))
+              }
+            />
+
+            {/* Saturation */}
+            <FxControl
+              icon={<EclipseIcon size={24} />}
+              controlType="slider"
+              value={fx.hueSat.saturation}
+              min={0}
+              max={1.1}
+              step={0.15}
+              onChange={(value) =>
+                setFx((prev: any) => ({
+                  ...prev,
+                  hueSat: {
+                    ...prev.hueSat,
+                    saturation: value,
+                  },
+                }))
+              }
+            />
+
+            {/* Tracking */}
+            <FxControl
+              icon={<EyeIcon size={24} />}
+              controlType="switch"
+              value={boxGridProps?.boxProps?.tracking || false} // Safely access tracking state
+              onChange={(checked) =>
+                setBoxGridProps((prev: any) => ({
+                  ...prev,
+                  boxProps: {
+                    ...prev.boxProps,
+                    tracking: checked,
+                  },
+                }))
+              }
+            />
+
+            {/* Animation Direction */}
+            <FxControl
+              icon={<CircleArrowOutUpRightIcon size={24} />}
+              controlType="switch"
+              value={boxGridProps.animationDirection === 1}
+              onChange={(checked) =>
+                setBoxGridProps((prev: any) => ({
+                  ...prev,
+                  animationDirection: checked ? 1 : -1,
+                }))
+              }
+            />
+          </>
+        );
+      case "shader":
+        return <div>Shader scene</div>;
+      default:
+        return <></>;
     }
   }
 
@@ -64,185 +220,69 @@ const UserInterface = ({
       </h1>
 
       <Image
-        className="absolute bottom-5 left-5 z-10"
-        src="/copyright.svg"
+        className="fadeIn2 select-none absolute bottom-5 left-5 z-10"
+        src={theme === "light" ? "/copyright.svg" : "/copyright-w.svg"}
         alt="Marc Miango"
         width={150}
         height={150}
       />
 
       {/* Control Panel */}
-      <div className="absolute bottom-10 right-10 z-10 bg-primary rounded-full p-4">
-        <div className="flex gap-8">
+      <div className="fadeIn3 absolute bottom-5 right-10 z-10  rounded-full p-4">
+        <div className="flex gap-8 items-center">
           {/* Scene Control */}
           <HoverCard>
             <HoverCardTrigger>
-              <ArmchairIcon size={24} />
+              <ArmchairIcon className="text-primary" size={24} />
             </HoverCardTrigger>
-            <HoverCardContent></HoverCardContent>
-          </HoverCard>
-
-          {/* FX Control */}
-          <HoverCard>
-            <HoverCardTrigger>
-              <SlidersHorizontalIcon size={24} />
-            </HoverCardTrigger>
-            <HoverCardContent className="bg-primary">
-              {/* FX Switch */}
-              <div className="flex flex-col gap-2">
-                <div className="flex gap-4">
-                  <SparklesIcon size={24} />
-                  <Switch
-                    checked={fxSwitch}
-                    onCheckedChange={() => setFxSwitch(!fxSwitch)}
-                  />
+            <HoverCardContent className="bg-secondary">
+              <div className="flex flex-col gap-4">
+                <div
+                  onClick={() => setAppState("boxGrid")}
+                  className="cursor-pointer select-none flex gap-2 opacity-50 hover:opacity-100 duration-150"
+                >
+                  <BoxesIcon size={24} />
+                  <p>Box Grid Scene</p>
                 </div>
-                {/* Grid Spacing */}
-                <div className="flex gap-4">
-                  <LayoutGridIcon size={24} />
-                  <Slider
-                    value={[boxGridProps.spacing]}
-                    min={0.5}
-                    max={2}
-                    step={0.01}
-                    onValueChange={(value) =>
-                      setBoxGridProps((prev: any) => ({
-                        ...prev,
-                        spacing: value[0],
-                      }))
-                    }
-                  />
-                </div>
-                {/* Pixelation */}
-                <div className="flex gap-4">
-                  <Grid2X2Icon size={24} />
-                  <Slider
-                    id="pixelation-slider"
-                    value={[fx.pixelation]}
-                    min={0}
-                    max={5}
-                    step={0.5}
-                    onValueChange={(value) =>
-                      setFx((prev: any) => ({
-                        ...prev,
-                        pixelation: value[0],
-                      }))
-                    }
-                  />
-                </div>
-                {/* Bloom */}
-                <div className="flex gap-4">
-                  <SunIcon size={24} />
-                  <Switch
-                    id="bloom-switch"
-                    checked={fx.bloom}
-                    onCheckedChange={(checked) =>
-                      setFx((prev: any) => ({
-                        ...prev,
-                        bloom: checked,
-                      }))
-                    }
-                  />
-                </div>
-                {/* Dot */}
-                <div className="flex gap-4">
-                  <GripIcon size={24} />
-                  <Slider
-                    id="dot-slider"
-                    value={[fx.dot]}
-                    min={0}
-                    max={1}
-                    step={0.01}
-                    onValueChange={(value) =>
-                      setFx((prev: any) => ({
-                        ...prev,
-                        dot: value[0],
-                      }))
-                    }
-                  />
-                </div>
-                {/* Glitch */}
-                <div className="flex gap-4">
-                  <SquareSquareIcon size={24} />
-                  <Switch
-                    id="glitch-switch"
-                    checked={fx.glitch}
-                    onCheckedChange={(checked) =>
-                      setFx((prev: any) => ({
-                        ...prev,
-                        glitch: checked,
-                      }))
-                    }
-                  />
-                </div>
-                {/* Hue*/}
-                <div className="flex gap-4">
-                  <BlendIcon size={24} />
-                  <Slider
-                    id="hue-slider"
-                    value={[fx.hueSat.hue]}
-                    min={0}
-                    max={50}
-                    step={1}
-                    onValueChange={(value) =>
-                      setFx((prev: any) => ({
-                        ...prev,
-                        hueSat: {
-                          ...prev.hueSat,
-                          hue: value[0],
-                        },
-                      }))
-                    }
-                  />
-                </div>
-                {/* Saturation*/}
-                <div className="flex gap-4">
-                  <EclipseIcon size={24} />
-                  <Slider
-                    id="saturation-slider"
-                    value={[fx.hueSat.saturation]}
-                    min={0}
-                    max={10}
-                    step={1.1}
-                    onValueChange={(value) =>
-                      setFx((prev: any) => ({
-                        ...prev,
-                        hueSat: {
-                          ...prev.hueSat,
-                          saturation: value[0],
-                        },
-                      }))
-                    }
-                  />
-                </div>
-                {/* Tracking */}
-                <div className="flex gap-4">
-                  <EyeIcon size={24} />
-                  <Switch
-                    id="tracking-switch"
-                    checked={boxGridProps.tracking}
-                    onCheckedChange={(checked) =>
-                      setBoxGridProps((prev: any) => ({
-                        ...prev,
-                        boxProps: {
-                          ...prev.boxProps,
-                          tracking: checked,
-                        },
-                      }))
-                    }
-                  />
+                <div
+                  onClick={() => setAppState("shader")}
+                  className="cursor-pointer select-none flex gap-2 opacity-50 hover:opacity-100 duration-150"
+                >
+                  <OrbitIcon size={24} />
+                  <p>Shader Scene</p>
                 </div>
               </div>
             </HoverCardContent>
           </HoverCard>
 
-          {/* Light/Dark Mode */}
+          {/* FX Control */}
           <HoverCard>
             <HoverCardTrigger>
-              <SunMoonIcon size={24} />
+              <SlidersHorizontalIcon className="text-primary" size={24} />
             </HoverCardTrigger>
-            <HoverCardContent></HoverCardContent>
+            <HoverCardContent className="bg-secondary">
+              <div className="flex flex-col gap-4">
+                {/* FX Switch */}
+                <FxControl
+                  icon={<SparklesIcon size={24} />}
+                  controlType="switch"
+                  value={fxSwitch}
+                  onChange={() => setFxSwitch(!fxSwitch)}
+                />
+                {renderControls()}
+              </div>
+            </HoverCardContent>
           </HoverCard>
+
+          {/* Light/Dark Mode */}
+          <div
+            onClick={() =>
+              theme === "light" ? setTheme("dark") : setTheme("light")
+            }
+            className="cursor-pointer border rounded-full border-primary p-2"
+          >
+            <SunMoonIcon className=" text-primary" size={12} />
+          </div>
         </div>
       </div>
     </>
